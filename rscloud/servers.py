@@ -42,8 +42,7 @@ class Servers(object):
 
         if async:
             return resp.json
-        else:
-            return self._wait_for_server(resp.json)
+        return self._wait_for_server(resp.json)
 
     def delete(self, server_id):
         """
@@ -87,13 +86,115 @@ class Servers(object):
     def update(self):
         raise NotImplementedError
 
-    def action(self):
-        raise NotImplementedError
+    def changePassword(self, serverId, password):
+        url = self._url + '/' + serverId + '/action'
+        data = json.dumps({
+                'changePassword': {
+                    "adminPass": password,
+                }
+            })
+        resp = self._sess.post(url, data=data)
+        return resp.json
+
+    def reboot(self, serverId, reboot_type):
+        url = self._url + '/' + serverId + '/action'
+        data = json.dumps({
+                'reboot': {
+                    'type': reboot_type
+                }
+            })
+        resp = self._sess.post(url, data=data)
+        return resp.json
+
+    def rebuild(self, name, imageRef, flavorRef, personality=None,
+               metadata=None, async=True):
+        url = self._url + '/' + serverId + '/action'
+        data = json.dumps({
+                'rebuild': {
+                    'name': name,
+                    'imageRef': imageRef,
+                    'flavorRef': flavorRef,
+                    'metadata': metadata,
+                    'personality': personality,
+                }
+            })
+        resp = self._sess.post(url, data=data)
+        if async:
+            return resp.json
+        return self._wait_for_server(resp.json)
+
+    def resize(self, serverId, falvorId, async=True, auto_verify=False):
+        # API bug, resize.flavorRef only accepts flavorId
+        url = self._url + '/' + serverId + '/action'
+        data = json.dumps({
+                'resize': {
+                    'flavorRef': flavorRef
+                }
+            })
+        resp = self._sess.post(url, data=data)
+        if async:
+            return resp.json
+        elif auto_verify:
+            resp = self._wait_for_server(resp.json)
+            verify = self.verify_resize(serverId)
+            resp.update(verify)
+            return resp
+
+        # wait for resize, but don't verify
+        return self._wait_for_server(self.json)
+
+    def confirmResize(self, serverId):
+        url = self._url + '/' + serverId + '/action'
+        data = json.dumps({
+                'confirmResize': None
+            })
+        resp = self._sess.post(url, data=data)
+        return resp.json
+
+    def revertResize(self, serverId):
+        #TODO: can this be async?
+        url = self._url + '/' + serverId + '/action'
+        data = json.dumps({
+                'revertResize': None
+            })
+        resp = self._sess.post(url, data=data)
+        return resp.json
+
+    def rescue(self, serverId):
+        # TODO: make a synchronous option
+        url = self._url + '/' + serverId + '/action'
+        data = json.dumps({
+                'rescue': "none"
+            })
+        resp = self._sess.post(url, data=data)
+        return resp.json
+
+    def unrescue(self, serverId):
+        # TODO: make a synchronous option
+        url = self._url + '/' + serverId + '/action'
+        data = json.dumps({
+                'unrescue': None
+            })
+        resp = self._sess.post(url, data=data)
+        return resp.json
+
+    def createImage(self, serverId, name, metadata):
+        # TODO, wait for something
+        url = self._url + '/' + serverId + '/action'
+        data = json.dumps({
+                'createImage': {
+                    'name': name,
+                    'metadata': metadata,
+                }
+            })
+        resp = self._sess.post(url, data=data)
+        return resp.json
 
     def _wait_for_server(self, resp):
+        # TODO: timeout
         # this is only returned once, so don't lose it!
-        admin_pass = resp['server']['adminPass']
-        status = 'BUILD'
+        admin_pass = resp['server'].get('adminPass')
+        status = 'WAIT'
         progress = 0
         link = None
         for each in resp['server']['links']:
@@ -102,7 +203,7 @@ class Servers(object):
 
         # TODO: error checking for the responses
 
-        while status == 'BUILD':
+        while status in ('WAIT', 'BUILD', 'REBUILD', 'RESIZE'):
             time.sleep(5)
 
             resp = self._sess.get(link)
