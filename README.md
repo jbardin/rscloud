@@ -7,6 +7,8 @@ to keep the interface as close to the actual REST API as possible. The rscloud
 methods all operate on, and return the same raw JSON used in the API calls, so
 the Rackspace documentation can be as a reference for this library.
 
+Documentation can be found at <http://docs.rackspace.com/api/>
+
 
 ## examples
 ```python
