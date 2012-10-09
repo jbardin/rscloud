@@ -110,7 +110,7 @@ class Records(object):
         resp = self._sess.get(url)
         return resp.json
 
-    def search(self, domainId, record_type=None, name=None, data=None):
+    def search(self, domainId, record_type='A', name=None, data=None):
         url = self._url + '/' + str(domainId) + '/records'
         params = {
             'type': record_type,
