@@ -9,6 +9,7 @@ from .session import AuthenticatedSession
 from .domains import Domains, Records
 from .servers import Servers, Images
 from .servers_firstgen import FirstGenServers, FirstGenImages
+from .exceptions import RackspaceAuthError
 
 class RackspaceSession(object):
     def __init__(self, username=None, api_key=None, region=None, auth_url=None):
