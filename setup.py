@@ -11,5 +11,5 @@ setup(
         license = 'MIT',
         url = 'https://github.com/jbardin/rscloud.git',
         packages = ['rscloud'],
-        install_requires = ['requests'],
+        install_requires = ['requests', 'python-dateutil'],
 )
