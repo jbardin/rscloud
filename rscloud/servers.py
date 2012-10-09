@@ -107,7 +107,7 @@ class Servers(object):
         resp = self._sess.post(url, data=data)
         return resp.json
 
-    def rebuild(self, name, imageRef, flavorRef, personality=None,
+    def rebuild(self, serverId, name, imageRef, flavorRef, personality=None,
                 metadata=None, async=True):
         url = self._url + '/' + serverId + '/action'
         data = json.dumps({'rebuild': {'name': name,
@@ -306,7 +306,7 @@ class Flavors(object):
                   'marker': marker,
                   'limit': limit}
 
-        resp = self._sess.get(self._url, params=params)
+        resp = self._sess.get(url, params=params)
         return resp.json
 
     def detail(self, flavor_id):

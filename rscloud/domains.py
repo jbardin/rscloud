@@ -67,7 +67,7 @@ class Domains(object):
         for rec in records:
             domains.append({'contentType': 'BIND_9', 'contents': rec})
 
-        body = jdon.dumps({'domains': domains})
+        body = json.dumps({'domains': domains})
 
         resp = self._sess.post(url, data=body)
         return resp.json
@@ -156,13 +156,13 @@ class Records(object):
         url = self._url + '/' + str(domainId) + '/records/' + str(recordId)
         record_data = {}
         if name:
-            req_data['name'] = name
+            record_data['name'] = name
         if data:
-            req_data['data'] = data
+            record_data['data'] = data
         if priority:
-            req_data['priority'] = priority
+            record_data['priority'] = priority
         if comment:
-            req_data['comment'] = comment
+            record_data['comment'] = comment
 
         req_data = json.dumps(record_data)
         resp = self._sess.put(url, data=req_data)
