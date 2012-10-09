@@ -103,12 +103,11 @@ class Servers(object):
         # TODO: error checking for the responses
 
         while status == 'BUILD':
-            time.sleep(1)
+            time.sleep(5)
 
             resp = self._sess.get(link)
             status = resp.json['server']['status']
             progress = resp.json['server']['progress']
-            print progress
             # TODO: log progress
 
         server_detail = resp.json.copy()
