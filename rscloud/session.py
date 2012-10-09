@@ -80,12 +80,10 @@ class AuthenticatedSession(object):
             else:
                 raise RackspaceAuthError('auth_url not defined')
 
-        auth_data = json.dumps({"auth":
-                {"RAX-KSKEY:apiKeyCredentials":
-                    {"username": self.username,
-                    "apiKey": self.api_key}
-                }
-            })
+        auth_data = json.dumps({"auth": {"RAX-KSKEY:apiKeyCredentials":
+                                        {"username": self.username,
+                                         "apiKey": self.api_key}}
+                                })
 
         resp = self.session.post(AUTH_URL, data=auth_data)
         if resp.status_code != 200:

@@ -11,8 +11,10 @@ from .servers import Servers, Images, Flavors
 from .servers_firstgen import FirstGenServers, FirstGenImages
 from .exceptions import RackspaceAuthError
 
+
 class RackspaceSession(object):
-    def __init__(self, username=None, api_key=None, region=None, auth_url=None):
+    def __init__(self, username=None, api_key=None, region=None,
+                 auth_url=None):
         self.session = AuthenticatedSession()
         self.session.login(username, api_key, region, auth_url)
 

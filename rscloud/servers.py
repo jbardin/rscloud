@@ -4,6 +4,7 @@
 import json
 import time
 
+
 class Servers(object):
     def __init__(self, session):
         """
@@ -12,7 +13,8 @@ class Servers(object):
         :param session: rscloud.AuthenticatedSession
         """
         self._sess = session
-        self._url = session.sc['cloudServersOpenStack']['publicURL'] + '/servers'
+        self._url = (session.sc['cloudServersOpenStack']['publicURL'] +
+                     '/servers')
 
     def create(self, name, imageRef, flavorRef, personality=None,
                metadata=None, async=True):
@@ -28,13 +30,11 @@ class Servers(object):
         if personality is None:
             personality = []
 
-        req_body = {'server': {
-                        'name': name,
-                        'imageRef': imageRef,
-                        'flavorRef': str(flavorRef),
-                        'metadata': metadata,
-                        'personality': personality,
-                        }
+        req_body = {'server': {'name': name,
+                               'imageRef': imageRef,
+                               'flavorRef': str(flavorRef),
+                               'metadata': metadata,
+                               'personality': personality}
                     }
 
         resp = self._sess.post(self._url, data=json.dumps(req_body))
@@ -97,36 +97,25 @@ class Servers(object):
 
     def changePassword(self, serverId, password):
         url = self._url + '/' + serverId + '/action'
-        data = json.dumps({
-                'changePassword': {
-                    "adminPass": password,
-                }
-            })
+        data = json.dumps({'changePassword': {'adminPass': password}})
         resp = self._sess.post(url, data=data)
         return resp.json
 
     def reboot(self, serverId, reboot_type='SOFT'):
         url = self._url + '/' + serverId + '/action'
-        data = json.dumps({
-                'reboot': {
-                    'type': reboot_type
-                }
-            })
+        data = json.dumps({'reboot': {'type': reboot_type}})
         resp = self._sess.post(url, data=data)
         return resp.json
 
     def rebuild(self, name, imageRef, flavorRef, personality=None,
-               metadata=None, async=True):
+                metadata=None, async=True):
         url = self._url + '/' + serverId + '/action'
-        data = json.dumps({
-                'rebuild': {
-                    'name': name,
-                    'imageRef': imageRef,
-                    'flavorRef': str(flavorRef),
-                    'metadata': metadata,
-                    'personality': personality,
-                }
-            })
+        data = json.dumps({'rebuild': {'name': name,
+                                       'imageRef': imageRef,
+                                       'flavorRef': str(flavorRef),
+                                       'metadata': metadata,
+                                       'personality': personality}
+                           })
         resp = self._sess.post(url, data=data)
         if async:
             return resp.json
@@ -135,58 +124,45 @@ class Servers(object):
     def resize(self, serverId, flavorId):
         # API bug, resize.flavorRef only accepts flavorId
         url = self._url + '/' + serverId + '/action'
-        data = json.dumps({
-                'resize': {
-                    'flavorRef': str(flavorId)
-                }
-            })
+        data = json.dumps({'resize': {
+                           'flavorRef': str(flavorId)}
+                           })
         resp = self._sess.post(url, data=data)
         return resp.json
 
     def confirmResize(self, serverId):
         url = self._url + '/' + serverId + '/action'
-        data = json.dumps({
-                'confirmResize': None
-            })
+        data = json.dumps({'confirmResize': None})
         resp = self._sess.post(url, data=data)
         return resp.json
 
     def revertResize(self, serverId):
         #TODO: can this be async?
         url = self._url + '/' + serverId + '/action'
-        data = json.dumps({
-                'revertResize': None
-            })
+        data = json.dumps({'revertResize': None})
         resp = self._sess.post(url, data=data)
         return resp.json
 
     def rescue(self, serverId):
         # TODO: make a synchronous option
         url = self._url + '/' + serverId + '/action'
-        data = json.dumps({
-                'rescue': "none"
-            })
+        data = json.dumps({'rescue': "none"})
         resp = self._sess.post(url, data=data)
         return resp.json
 
     def unrescue(self, serverId):
         # TODO: make a synchronous option
         url = self._url + '/' + serverId + '/action'
-        data = json.dumps({
-                'unrescue': None
-            })
+        data = json.dumps({'unrescue': None})
         resp = self._sess.post(url, data=data)
         return resp.json
 
     def createImage(self, serverId, name, metadata):
         # TODO, wait for something
         url = self._url + '/' + serverId + '/action'
-        data = json.dumps({
-                'createImage': {
-                    'name': name,
-                    'metadata': metadata,
-                }
-            })
+        data = json.dumps({'createImage': {'name': name,
+                                           'metadata': metadata}
+                           })
         resp = self._sess.post(url, data=data)
         return resp.json
 
@@ -224,7 +200,8 @@ class Images(object):
         :param session: rscloud.AuthenticatedSession
         """
         self._sess = session
-        self._url = session.sc['cloudServersOpenStack']['publicURL'] + '/images'
+        self._url = (session.sc['cloudServersOpenStack']['publicURL']
+                     + '/images')
 
     def detail(self, image_id):
         """
@@ -248,8 +225,8 @@ class Images(object):
         :param changes_since: Filter images to those with change since time
         :param marker: The ID of the last item in the previous list
         :param limit: page size
-        :param image_type: Filter Rackspace images, or client images (BASE|SERVER)
-                           !SERVER type does not current work!
+        :param image_type: Filter Rackspace or client images (BASE|SERVER)
+                           !SERVER type does not currently work!
         """
         params = {}
         if server:
@@ -277,10 +254,8 @@ class Images(object):
         :param server_id: numerical id of server to image
         :param name: name for new image
         """
-        req_body = {'image': {
-                        'serverId': int(server_id),
-                        'name': name
-                        }
+        req_body = {'image': {'serverId': int(server_id),
+                              'name': name}
                     }
 
         resp = self._sess.post(self._url, data=json.dumps(req_body))
@@ -296,6 +271,7 @@ class Images(object):
         resp = self._sess.delete(url)
         return resp.json
 
+
 class Flavors(object):
     def __init__(self, session):
         """
@@ -304,7 +280,8 @@ class Flavors(object):
         :param session: rscloud.AuthenticatedSession
         """
         self._sess = session
-        self._url = session.sc['cloudServersOpenStack']['publicURL'] + '/flavors'
+        self._url = (session.sc['cloudServersOpenStack']['publicURL']
+                     + '/flavors')
 
     def list(self, minDisk=None, minRam=None, marker=None, limit=None,
              detail=False):

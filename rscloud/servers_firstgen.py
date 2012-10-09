@@ -3,6 +3,7 @@
 
 import json
 
+
 class FirstGenServers(object):
     def __init__(self, session):
         """
@@ -26,12 +27,10 @@ class FirstGenServers(object):
         if personality is None:
             personality = []
 
-        req_body = {'server': {
-                        'name': name,
-                        'imageId': image,
-                        'flavorId': flavor,
-                        'personality': personality,
-                        }
+        req_body = {'server': {'name': name,
+                               'imageId': image,
+                               'flavorId': flavor,
+                               'personality': personality}
                     }
 
         resp = self._sess.post(self.url, data=json.dumps(req_body))
@@ -69,6 +68,7 @@ class FirstGenServers(object):
         resp = self._sess.get(url)
         return resp.json
 
+
 class FirstGenImages(object):
     def __init__(self, session):
         """
@@ -103,10 +103,8 @@ class FirstGenImages(object):
         :param server_id: numerical id of server to image
         :param name: name for new image
         """
-        req_body = {'image': {
-                        'serverId': int(server_id),
-                        'name': name
-                        }
+        req_body = {'image': {'serverId': int(server_id),
+                              'name': name}
                     }
 
         resp = self._sess.post(self.url, data=json.dumps(req_body))

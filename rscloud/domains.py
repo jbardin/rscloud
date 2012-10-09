@@ -3,6 +3,7 @@
 
 import json
 
+
 class Domains(object):
     def __init__(self, session):
         """
@@ -29,8 +30,7 @@ class Domains(object):
     def detail(self, domain_id, records=True, subdomains=False):
         url = self._url + '/' + str(domain_id)
         params = {'showRecords': str(bool(records)).lower(),
-                    'showSubdomains': str(bool(subdomains)).lower()
-                    }
+                  'showSubdomains': str(bool(subdomains)).lower()}
 
         resp = self._sess.get(url, params=params)
         return resp.json
@@ -172,5 +172,3 @@ class Records(object):
 class Rdns(object):
     def __init__(self, session):
         self._sess = session
-
-
