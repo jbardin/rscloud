@@ -38,7 +38,6 @@ class Servers(object):
                     }
 
         resp = self._sess.post(self._url, data=json.dumps(req_body))
-        print resp
 
         if async:
             return resp.json
@@ -96,7 +95,7 @@ class Servers(object):
         resp = self._sess.post(url, data=data)
         return resp.json
 
-    def reboot(self, serverId, reboot_type):
+    def reboot(self, serverId, reboot_type='SOFT'):
         url = self._url + '/' + serverId + '/action'
         data = json.dumps({
                 'reboot': {
@@ -123,25 +122,16 @@ class Servers(object):
             return resp.json
         return self._wait_for_server(resp.json)
 
-    def resize(self, serverId, falvorId, async=True, auto_verify=False):
+    def resize(self, serverId, flavorId):
         # API bug, resize.flavorRef only accepts flavorId
         url = self._url + '/' + serverId + '/action'
         data = json.dumps({
                 'resize': {
-                    'flavorRef': str(flavorRef)
+                    'flavorRef': str(flavorId)
                 }
             })
         resp = self._sess.post(url, data=data)
-        if async:
-            return resp.json
-        elif auto_verify:
-            resp = self._wait_for_server(resp.json)
-            verify = self.verify_resize(serverId)
-            resp.update(verify)
-            return resp
-
-        # wait for resize, but don't verify
-        return self._wait_for_server(self.json)
+        return resp.json
 
     def confirmResize(self, serverId):
         url = self._url + '/' + serverId + '/action'
@@ -249,6 +239,7 @@ class Images(object):
         :param marker: The ID of the last item in the previous list
         :param limit: page size
         :param image_type: Filter Rackspace images, or client images (BASE|SERVER)
+                           !SERVER type does not current work!
         """
         params = {'server': server,
                   'name': name,
