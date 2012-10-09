@@ -7,7 +7,7 @@ Rackspace API access library
 
 from .session import AuthenticatedSession
 from .domains import Domains, Records
-from .servers import Servers, Images
+from .servers import Servers, Images, Flavors
 from .servers_firstgen import FirstGenServers, FirstGenImages
 from .exceptions import RackspaceAuthError
 
@@ -18,6 +18,7 @@ class RackspaceSession(object):
 
         self.servers = Servers(self.session)
         self.servers.images = Images(self.session)
+        self.servers.flavors = Flavors(self.session)
         self.servers_firstgen = FirstGenServers(self.session)
         self.servers_firstgen.images = FirstGenImages(self.session)
         self.domains = Domains(self.session)

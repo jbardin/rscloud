@@ -32,6 +32,8 @@ u'servers': [{u'id': 503815, u'name': u'srv01'},
     u'type': u'application/vnd.openstack.image'}],
   u'name': u'CentOS 5.8'},
   ...
+
+>>> #create a server named "test01", and wait for the server to become active
 >>> rs.servers.create('test01', 'acf05b3c-5403-4cf0-900c-9b12b0db0644', 4, async=False)
 # waits for server to come online, and returns all server details, including adminPass
 ```

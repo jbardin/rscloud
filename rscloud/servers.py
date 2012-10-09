@@ -31,7 +31,7 @@ class Servers(object):
         req_body = {'server': {
                         'name': name,
                         'imageRef': imageRef,
-                        'flavorRef': flavorRef,
+                        'flavorRef': str(flavorRef),
                         'metadata': metadata,
                         'personality': personality,
                         }
@@ -65,7 +65,7 @@ class Servers(object):
             url = self._url
 
         params = {'image': image,
-                  'flavor': flavor,
+                  'flavor': str(flavor),
                   'name': name,
                   'status': status,
                   'marker': marker,
@@ -113,7 +113,7 @@ class Servers(object):
                 'rebuild': {
                     'name': name,
                     'imageRef': imageRef,
-                    'flavorRef': flavorRef,
+                    'flavorRef': str(flavorRef),
                     'metadata': metadata,
                     'personality': personality,
                 }
@@ -128,7 +128,7 @@ class Servers(object):
         url = self._url + '/' + serverId + '/action'
         data = json.dumps({
                 'resize': {
-                    'flavorRef': flavorRef
+                    'flavorRef': str(flavorRef)
                 }
             })
         resp = self._sess.post(url, data=data)
@@ -281,8 +281,55 @@ class Images(object):
         """
         Delete a server image
 
-        :param image_id: numerical id of image to delete
+        :param image_id: id of image to delete
         """
         url = self._url + '/' + image_id
         resp = self._sess.delete(url)
+        return resp.json
+
+class Flavors(object):
+    def __init__(self, session):
+        """
+        Rackspace Coudservers Flavors
+
+        :param session: rscloud.AuthenticatedSession
+        """
+        self._sess = session
+        self._url = session.sc['cloudServersOpenStack']['publicURL'] + '/flavors'
+
+    def list(self, minDisk=None, minRam=None, marker=None, limit=None,
+             detail=False):
+        """
+        List all server flavors
+
+        :param minDisk: Filters the list of flavors to those with the specified
+                        minimum number of gigabytes of disk storage.)
+        :param minRam: Filters the list of flavors to those with the specified
+                       minimum amount of RAM in megabytes.
+        :param marker: The ID of the last item in the previous list.
+        :param limit: Sets the page size.
+
+        """
+        if detail:
+            url = self._url + '/detail'
+        else:
+            url = self._url
+
+        params = {'minDisk': minDisk,
+                  'minRam': minRam,
+                  'marker': marker,
+                  'limit': limit}
+
+        resp = self._sess.get(self._url, params=params)
+        return resp.json
+
+    def detail(self, flavor_id):
+        """
+        Lists details of the specified flavor
+
+        :param flavor_id: id of flavor to detail
+
+        """
+        url = self._url + '/' + str(flavor_id)
+        resp = self._sess.get(url)
         return resp.json
