@@ -63,13 +63,23 @@ class Servers(object):
         else:
             url = self._url
 
-        params = {'image': image,
-                  'flavor': str(flavor),
-                  'name': name,
-                  'status': status,
-                  'marker': marker,
-                  'limit': limit,
-                  'changes-since': changes_since}
+        params = {}
+        if image:
+            params['image'] = image
+        if flavor:
+            params['flavor'] = flavor
+        if name:
+            params['name'] = name
+        if status:
+            params['status'] = status
+        if marker:
+            params['marker'] = marker
+        if limit:
+            params['limit'] = limit
+        if changes_since:
+            params['changes-since'] = changes_since
+        if detail:
+            params['detail'] = detail
 
         resp = self._sess.get(url, params=params)
         return resp.json
@@ -241,13 +251,21 @@ class Images(object):
         :param image_type: Filter Rackspace images, or client images (BASE|SERVER)
                            !SERVER type does not current work!
         """
-        params = {'server': server,
-                  'name': name,
-                  'status': status,
-                  'changes-since': changes_since,
-                  'marker': marker,
-                  'limit': limit,
-                  'type': image_type}
+        params = {}
+        if server:
+            params['server'] = server
+        if name:
+            params['name'] = name
+        if status:
+            params['status'] = status
+        if changes_since:
+            params['changes-since'] = changes_since
+        if marker:
+            params['marker'] = marker
+        if limit:
+            params['limit'] = limit
+        if image_type:
+            params['type'] = image_type
 
         resp = self._sess.get(self._url, params=params)
         return resp.json
