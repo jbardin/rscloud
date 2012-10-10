@@ -33,9 +33,13 @@ class Servers(object):
         req_body = {'server': {'name': name,
                                'imageRef': imageRef,
                                'flavorRef': str(flavorRef),
-                               'metadata': metadata,
-                               'personality': personality}
+                               }
                     }
+
+        if metadata:
+            req_body['metadata'] = metadata
+        if personality:
+            req_body['personality'] = personality
 
         resp = self._sess.post(self._url, data=json.dumps(req_body))
 
