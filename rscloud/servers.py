@@ -17,7 +17,7 @@ class Servers(object):
                      '/servers')
 
     def create(self, name, imageRef, flavorRef, personality=None,
-               metadata=None, async=True):
+               metadata=None):
         """
         Create a cloud server.
 
@@ -43,10 +43,7 @@ class Servers(object):
 
         #TODO error handling
         resp = self._sess.post(self._url, data=json.dumps(req_body))
-
-        if async:
-            return resp.json
-        return self._wait_for_server(resp.json)
+        return resp.json
 
     def delete(self, server_id):
         """
@@ -113,7 +110,7 @@ class Servers(object):
         return resp.json
 
     def rebuild(self, serverId, name, imageRef, flavorRef, personality=None,
-                metadata=None, async=True):
+                metadata=None):
         url = self._url + '/' + serverId + '/action'
         data = json.dumps({'rebuild': {'name': name,
                                        'imageRef': imageRef,
@@ -122,9 +119,7 @@ class Servers(object):
                                        'personality': personality}
                            })
         resp = self._sess.post(url, data=data)
-        if async:
-            return resp.json
-        return self._wait_for_server(resp.json)
+        return resp.json
 
     def resize(self, serverId, flavorId):
         # API bug, resize.flavorRef only accepts flavorId
@@ -170,31 +165,6 @@ class Servers(object):
                            })
         resp = self._sess.post(url, data=data)
         return resp.json
-
-    def _wait_for_server(self, resp):
-        # TODO: timeout
-        # this is only returned once, so don't lose it!
-        admin_pass = resp['server'].get('adminPass')
-        status = 'WAIT'
-        progress = 0
-        link = None
-        for each in resp['server']['links']:
-            if each['rel'] == 'self':
-                link = each['href']
-
-        # TODO: error checking for the responses
-
-        while status in ('WAIT', 'BUILD', 'REBUILD', 'RESIZE'):
-            time.sleep(5)
-
-            resp = self._sess.get(link)
-            status = resp.json['server']['status']
-            progress = resp.json['server']['progress']
-            # TODO: log progress
-
-        server_detail = resp.json.copy()
-        server_detail['adminPass'] = admin_pass
-        return server_detail
 
 
 class Images(object):
