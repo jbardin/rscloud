@@ -28,6 +28,9 @@ class AuthenticatedSession(object):
         self.session = requests.session()
         self.session.headers = {'Content-Type': 'application/json',
                                 'Accept': 'application/json'}
+        # rackspace api has lots of connection errors
+        # retry 3 times on connection errors
+        self.session.config['max_retries'] = 3
 
     def login(self, username=None, api_key=None, region=None, auth_url=None):
         """
@@ -129,6 +132,7 @@ class AuthenticatedSession(object):
         print resp.json
 
     # delegate the http verbs to the request object
+    # TODO: retry on various transient errors
     def get(self, url, **kwargs):
         self._check_auth()
         return self.session.get(url, **kwargs)
