@@ -214,7 +214,7 @@ class Images(object):
         return resp.json
 
     def list(self, server=None, name=None, status=None, changes_since=None,
-             marker=None, limit=None, image_type=None):
+             marker=None, limit=None, image_type=None, detail=False):
         """
         List all server images
 
@@ -244,7 +244,12 @@ class Images(object):
         if image_type:
             params['type'] = image_type
 
-        resp = self._sess.get(self._url, params=params)
+        if detail:
+            url = self._url + '/detail'
+        else:
+            url = self._url
+
+        resp = self._sess.get(url, params=params)
         return resp.json
 
     def create(self, server_id, name):
