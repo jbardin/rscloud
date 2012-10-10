@@ -9,7 +9,7 @@ from .session import AuthenticatedSession
 from .domains import Domains, Records
 from .servers import Servers, Images, Flavors
 from .servers_firstgen import FirstGenServers, FirstGenImages
-from .exceptions import RackspaceAuthError
+from .exceptions import RackspaceAuthError, RackspaceAPIError
 
 
 class RackspaceSession(object):

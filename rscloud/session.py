@@ -7,7 +7,7 @@ import requests
 from datetime import datetime
 from dateutil.parser import parse as dt_parse
 
-from .exceptions import RackspaceAuthError
+from .exceptions import RackspaceAuthError, RackspaceAPIError
 
 AUTH_URL = 'https://identity.api.rackspacecloud.com/v2.0/tokens'
 
@@ -135,16 +135,28 @@ class AuthenticatedSession(object):
     # TODO: retry on various transient errors
     def get(self, url, **kwargs):
         self._check_auth()
-        return self.session.get(url, **kwargs)
+        try:
+            return self.session.get(url, **kwargs)
+        except requests.HTTPError as err:
+            raise RackspaceAPIError(err.response.text)
 
     def post(self, url, data=None, **kwargs):
         self._check_auth()
-        return self.session.post(url, data=data, **kwargs)
+        try:
+            return self.session.post(url, data=data, **kwargs)
+        except requests.HTTPError as err:
+            raise RackspaceAPIError(err.response.text)
 
     def put(self, url, data=None, **kwargs):
         self._check_auth()
-        return self.session.put(url, data=data, **kwargs)
+        try:
+            return self.session.put(url, data=data, **kwargs)
+        except requests.HTTPError as err:
+            raise RackspaceAPIError(err.response.text)
 
     def delete(self, url, **kwargs):
         self._check_auth()
-        return self.session.delete(url, **kwargs)
+        try:
+            return self.session.delete(url, **kwargs)
+        except requests.HTTPError as err:
+            raise RackspaceAPIError(err.response.text)

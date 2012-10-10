@@ -41,6 +41,7 @@ class Servers(object):
         if personality:
             req_body['personality'] = personality
 
+        #TODO error handling
         resp = self._sess.post(self._url, data=json.dumps(req_body))
 
         if async:
