@@ -97,6 +97,7 @@ class Servers(object):
     def update(self):
         raise NotImplementedError
 
+    # TODO: return something usefull from actions when there's no body
     def changePassword(self, serverId, password):
         url = self._url + '/' + serverId + '/action'
         data = json.dumps({'changePassword': {'adminPass': password}})
@@ -160,10 +161,10 @@ class Servers(object):
     def createImage(self, serverId, name, metadata=None):
         # TODO, wait for something
         url = self._url + '/' + serverId + '/action'
-        data = json.dumps({'createImage': {'name': name,
-                                           'metadata': metadata}
-                           })
-        resp = self._sess.post(url, data=data)
+        data = {'createImage': {'name': name}}
+        if metadata:
+            data['metadata'] = metadata
+        resp = self._sess.post(url, data=json.dumps(data))
         return resp.json
 
 
