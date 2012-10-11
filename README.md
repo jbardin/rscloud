@@ -13,7 +13,7 @@ Documentation can be found at <http://docs.rackspace.com/api/>
 ## examples
 ```python
 >>> import rscloud
->>> rs = rscloud.RackspaceSession()
+>>> rs = rscloud.RackspaceSession().login()
 
 >>> #list firstgen servers
 >>> rs.servers_firstgen.list()

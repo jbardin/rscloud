@@ -13,23 +13,23 @@ AUTH_URL = 'https://identity.api.rackspacecloud.com/v2.0/tokens'
 
 
 class AuthenticatedSession(object):
-    def __init__(self):
+    def __init__(self, username=None, api_key=None, region=None, auth_url=None):
         """
         An authenticated session for the rackspace api.
         """
 
         self.sc = {}  # service catalog
-        self.username = None
-        self.api_key = None
-        self.region = None
+        self.username = username
+        self.api_key = api_key
+        self.region = region
         self.auth_token = None
         self.expires = None
-        self.auth_url = None
+        self.auth_url = auth_url
         self.session = requests.session()
         self.session.headers = {'Content-Type': 'application/json',
                                 'Accept': 'application/json'}
         # rackspace api has lots of connection errors
-        # retry 3 times on connection errors
+        # retry 3 times
         self.session.config['max_retries'] = 3
 
     def login(self, username=None, api_key=None, region=None, auth_url=None):
@@ -37,8 +37,9 @@ class AuthenticatedSession(object):
         Credentials can be passed in directly, or are pulled from the os
         environment. The following environment variables are checked for
         the username/api_key pair:
-        - $RS_UN/$RS_KEY
-        - $CLOUD_SERVERS_USERNAME/$CLOUD_SERVERS_API_KEY
+        - $OS_USERNAME
+        - $OS_PASSWORD
+        - $OS_REGION_NAME
         """
         # look for username and api_key in some of the usual environment
         # variables before we bail out.
