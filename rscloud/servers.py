@@ -157,7 +157,7 @@ class Servers(object):
         resp = self._sess.post(url, data=data)
         return resp.json
 
-    def createImage(self, serverId, name, metadata):
+    def createImage(self, serverId, name, metadata=None):
         # TODO, wait for something
         url = self._url + '/' + serverId + '/action'
         data = json.dumps({'createImage': {'name': name,
@@ -227,19 +227,6 @@ class Images(object):
         resp = self._sess.get(url, params=params)
         return resp.json
 
-    def create(self, server_id, name):
-        """
-        Create a new server image
-
-        :param server_id: numerical id of server to image
-        :param name: name for new image
-        """
-        req_body = {'image': {'serverId': server_id,
-                              'name': name}
-                    }
-
-        resp = self._sess.post(self._url, data=json.dumps(req_body))
-        return resp.json
 
     def delete(self, image_id):
         """
