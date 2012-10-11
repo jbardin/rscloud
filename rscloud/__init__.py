@@ -25,6 +25,7 @@ class RackspaceSession(object):
 
         # Authenticate with the Rackspace cloud
         self.rs_session.login()
+        self.authenticated = True
 
         # collect our API endpoints
         self.servers = Servers(self.rs_session)
