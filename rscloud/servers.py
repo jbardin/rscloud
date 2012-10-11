@@ -234,7 +234,7 @@ class Images(object):
         :param server_id: numerical id of server to image
         :param name: name for new image
         """
-        req_body = {'image': {'serverId': int(server_id),
+        req_body = {'image': {'serverId': server_id,
                               'name': name}
                     }
 
