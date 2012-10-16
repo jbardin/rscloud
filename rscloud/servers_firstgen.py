@@ -42,7 +42,7 @@ class FirstGenServers(object):
 
         :param server_id: numerical id of the server to be deleted
         """
-        url = self.url + '/' + server_id
+        url = self.url + '/' + str(server_id)
         resp = self._sess.delete(url)
         return resp.json
 
@@ -63,7 +63,7 @@ class FirstGenServers(object):
         if not server_id:
             url = self.url + '/detail'
         else:
-            url = self.url + '/' + server_id
+            url = self.url + '/' + str(server_id)
 
         resp = self._sess.get(url)
         return resp.json
