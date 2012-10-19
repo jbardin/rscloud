@@ -9,7 +9,7 @@ from dateutil.parser import parse as dt_parse
 
 from .exceptions import RackspaceAuthError, RackspaceAPIError
 
-AUTH_URL = 'https://identity.api.rackspacecloud.com/v2.0/tokens'
+#AUTH_URL = 'https://identity.api.rackspacecloud.com/v2.0/tokens'
 
 
 class AuthenticatedSession(object):
@@ -89,7 +89,7 @@ class AuthenticatedSession(object):
                                          "apiKey": self.api_key}}
                                 })
 
-        resp = self.session.post(AUTH_URL, data=auth_data)
+        resp = self.session.post(self.auth_url+'/tokens', data=auth_data)
         if resp.status_code != 200:
             raise RackspaceAuthError(resp.status_code, resp.content)
 
