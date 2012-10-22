@@ -7,7 +7,12 @@ to keep the interface as close to the actual REST API as possible. The rscloud
 methods all operate on, and return the same raw JSON used in the API calls, so
 the Rackspace documentation can be as a reference for this library.
 
-Documentation can be found at <http://docs.rackspace.com/api/>
+RSCloud currently covers Rackspace First-gen Servers, Next-gen Servers, and Domains.
+
+NOTE: this is not complete for now, and only implements enough to cover what
+we're using at Litl.
+
+API Documentation can be found at <http://docs.rackspace.com/api/>
 
 
 ## examples
@@ -23,7 +28,7 @@ u'servers': [{u'id': 503815, u'name': u'srv01'},
  {u'id': 537179, u'name': u'srv04'}]}
 
 >>> #list nextgen images supplied by Rackspace
->>> rs.servers.images.list(image_type='BASE')
+>>> rs.servers.images.list()
  u'images': [{u'id': u'acf05b3c-5403-4cf0-900c-9b12b0db0644',
   u'links': [{u'href': u'https://ord.servers.api.rackspacecloud.com/v2/516116/images/acf05b3c-5403-4cf0-900c-9b12b0db0644',
     u'rel': u'self'},
