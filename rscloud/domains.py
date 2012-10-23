@@ -152,7 +152,7 @@ class Records(object):
         return resp.json
 
     def modify(self, domainId, recordId, name=None, data=None,
-               priority=None, comment=None):
+               priority=None, ttl=None, comment=None):
         url = self._url + '/' + str(domainId) + '/records/' + str(recordId)
         record_data = {}
         if name:
@@ -161,6 +161,8 @@ class Records(object):
             record_data['data'] = data
         if priority:
             record_data['priority'] = priority
+        if ttl:
+            record_data['ttl'] = ttl
         if comment:
             record_data['comment'] = comment
 
