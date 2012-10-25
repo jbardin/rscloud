@@ -13,18 +13,25 @@ from .exceptions import RackspaceAuthError, RackspaceAPIError
 
 
 class RackspaceSession(object):
-    def __init__(self, username=None, api_key=None, region=None,
-                 auth_url=None):
-        self.rs_session = AuthenticatedSession(username, api_key, region, auth_url)
+    def __init__(self, username=None, api_key=None, password=None,
+                 region=None, auth_url=None):
+        self.username = username
+        self.api_key = api_key
+        self.password = password
+        self.region = region
+        self.auth_url = auth_url
+        self.rs_session = AuthenticatedSession()
         self.authenticated = False
 
     def login(self):
         """
         Login to the Rackspace cloud, and setup all our API endpoints
+
         """
 
         # Authenticate with the Rackspace cloud
-        self.rs_session.login()
+        self.rs_session.login(self.username, self.api_key, self.password,
+                              self.region, self.auth_url)
         self.authenticated = True
 
         # collect our API endpoints

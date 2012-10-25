@@ -9,22 +9,20 @@ from dateutil.parser import parse as dt_parse
 
 from .exceptions import RackspaceAuthError, RackspaceAPIError
 
-#AUTH_URL = 'https://identity.api.rackspacecloud.com/v2.0/tokens'
-
+AUTH_URL = 'https://identity.api.rackspacecloud.com/v2.0/'
 
 class AuthenticatedSession(object):
-    def __init__(self, username=None, api_key=None, region=None, auth_url=None):
+    def __init__(self):
         """
         An authenticated session for the rackspace api.
         """
+        self.username = None
+        self.password = None
+        self.api_key = None
+        self.region = None
+        self.auth_url = None
 
         self.sc = {}  # service catalog
-        self.username = username
-        self.api_key = api_key
-        self.region = region
-        self.auth_token = None
-        self.expires = None
-        self.auth_url = auth_url
         self.session = requests.session()
         self.session.headers = {'Content-Type': 'application/json',
                                 'Accept': 'application/json'}
@@ -32,68 +30,61 @@ class AuthenticatedSession(object):
         # retry 3 times
         self.session.config['max_retries'] = 3
 
-    def login(self, username=None, api_key=None, region=None, auth_url=None):
+    def login(self, username, api_key=None, password=None,
+              region=None, auth_url=None):
         """
-        Credentials can be passed in directly, or are pulled from the os
-        environment. The following environment variables are checked for
-        the username/api_key pair:
-        - $OS_USERNAME
-        - $OS_PASSWORD
-        - $OS_REGION_NAME
+        Authenticate the current session with the rackspace auth servers, and
+        and retrieve the service catalog.
+
+
         """
-        # look for username and api_key in some of the usual environment
-        # variables before we bail out.
-        if self.username:
-            # noop: we're re-authenticating
-            pass
-        elif username:
+
+        if username:
             self.username = username
-        else:
-            if 'OS_USERNAME' in os.environ:
-                self.username = os.environ['OS_USERNAME']
-            else:
-                raise RackspaceAuthError('username not defined')
 
-        if self.api_key:
-            pass
-        elif api_key:
+        if api_key:
             self.api_key = api_key
-        else:
-            if 'OS_PASSWORD' in os.environ:
-                self.api_key = os.environ['OS_PASSWORD']
-            else:
-                raise RackspaceAuthError('api_key not defined')
 
-        if self.region:
-            pass
-        elif region:
+        if password:
+            self.password = password
+
+        if region:
             self.region = region
-        else:
-            if 'OS_REGION_NAME' in os.environ:
-                self.region = os.environ['OS_REGION_NAME']
-            else:
-                raise RackspaceAuthError('region not defined')
 
-        if self.auth_url:
-            pass
-        elif auth_url:
+        if auth_url:
             self.auth_url = auth_url
+        elif not self.auth_url:
+            self.auth_url = AUTH_URL
+
+        if self.password:
+            auth_data = {"auth":
+                            {"passwordCredentials":
+                                {"username": self.username,
+                                 "password": self.password}
+                            }
+                        }
+        elif self.api_key:
+            auth_data = {"auth":
+                            {"RAX-KSKEY:apiKeyCredentials":
+                                {"username": self.username,
+                                 "apiKey": self.api_key}
+                            }
+            }
         else:
-            if 'OS_AUTH_URL' in os.environ:
-                self.auth_url = os.environ['OS_AUTH_URL']
-            else:
-                raise RackspaceAuthError('auth_url not defined')
+            raise RackspaceAuthError('No password or api_key defined')
 
-        auth_data = json.dumps({"auth": {"RAX-KSKEY:apiKeyCredentials":
-                                        {"username": self.username,
-                                         "apiKey": self.api_key}}
-                                })
-
-        resp = self.session.post(self.auth_url+'/tokens', data=auth_data)
+        resp = self.session.post(self.auth_url+'/tokens',
+                                 data=json.dumps(auth_data))
         if resp.status_code != 200:
             raise RackspaceAuthError(resp.status_code, resp.content)
 
         self.auth_token = resp.json['access']['token']
+        self.auth_user = resp.json['access']['user']
+
+        if not self.region:
+            self.region = self.auth_user['RAX-AUTH:defaultRegion']
+        if not self.region:
+            raise RackspaceAPIError('No default region found')
 
         # parse the expires time into a utc time tuple, as dealing with tz
         # offsets is a pain.
@@ -116,7 +107,10 @@ class AuthenticatedSession(object):
             self.sc[service] = {}
             self.sc[service]['type'] = svc['type']
             for ep in svc['endpoints']:
-                if 'region' in ep and self.region == ep['region']:
+                if not self.region:
+                    # don't know what region to pick, take the first
+                    self.sc[service].update(ep)
+                elif 'region' in ep and self.region == ep['region']:
                     self.sc[service].update(ep)
                 elif 'region' not in ep:
                     self.sc[service].update(ep)
