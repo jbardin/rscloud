@@ -18,7 +18,7 @@ API Documentation can be found at <http://docs.rackspace.com/api/>
 ## examples
 ```python
 >>> import rscloud
->>> rs = rscloud.RackspaceSession().login()
+>>> rs = rscloud.RackspaceSession(username=OS_USERNAME, api_key=OS_PASSWORD, region=ORD).login()
 
 >>> #list firstgen servers
 >>> rs.servers_firstgen.list()
