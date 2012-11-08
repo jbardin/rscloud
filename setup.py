@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
         name = 'rscloud',
-        version = '0.3.0',
+        version = '0.3.1',
         author = 'James Bardin',
         author_email = 'jbardin@litl.com',
         license = 'MIT',
