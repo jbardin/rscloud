@@ -1,3 +1,9 @@
+# NOTE: Unmaintained
+
+Rackspace is putting together a unified API library for python called
+[pyrax](https://github.com/rackspace/pyrax). Please use that instead.
+
+
 # rscloud
 
 ## Simple Rackspace API wrapper
